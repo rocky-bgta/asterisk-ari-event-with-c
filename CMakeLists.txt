@@ -5,7 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Set the path to the vcpkg toolchain file (adjust if necessary)
-set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+#set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+
+# Set Boost root directory
+set(BOOST_ROOT "C:/boost_1_75_0")
+set(Boost_NO_SYSTEM_PATHS TRUE)
 
 # Include directories
 include_directories(${PROJECT_SOURCE_DIR}/include)

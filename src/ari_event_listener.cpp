@@ -1,9 +1,9 @@
 #include <websocketpp/config/asio_no_tls_client.hpp>
 #include <websocketpp/client.hpp>
-#include <boost/asio.hpp>
-#include <json/json.h>
 #include <iostream>
 #include <functional>
+#include <json/value.h>
+#include <json/reader.h>
 
 typedef websocketpp::client<websocketpp::config::asio_client> client;
 
