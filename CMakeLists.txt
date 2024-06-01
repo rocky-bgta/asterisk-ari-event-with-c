@@ -5,14 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Set the path to the vcpkg toolchain file (adjust if necessary)
-#set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
-
-# Set Boost root directory
-set(BOOST_ROOT "C:/boost_1_75_0")
-set(Boost_NO_SYSTEM_PATHS TRUE)
-
-# Include directories
-include_directories(${PROJECT_SOURCE_DIR}/include)
+set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 
 # Find and link Boost libraries
 find_package(Boost REQUIRED COMPONENTS system random)
@@ -40,8 +33,8 @@ endif()
 
 # List of source files
 set(SOURCES
-    ${PROJECT_SOURCE_DIR}/src/ari_event_listener.cpp
-    ${PROJECT_SOURCE_DIR}/src/main.cpp
+        ${PROJECT_SOURCE_DIR}/src/ari_event_listener.cpp
+        ${PROJECT_SOURCE_DIR}/src/main.cpp
 )
 
 # Define the executable
