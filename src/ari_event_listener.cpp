@@ -31,6 +31,9 @@ void on_message(client* c, websocketpp::connection_hdl hdl, websocketpp::config:
         // Example: Extracting target extension
         std::string target_extension = jsonData["args"][0].asString();
         std::cout << "Target extension: " << target_extension << std::endl;
+    }else if (event_type == "StasisEnd") {
+        std::string channel_id = jsonData["channel"]["id"].asString();
+        std::cout << "Channel ID: " << channel_id << " has left the Stasis application" << std::endl;
     }
 }
 
