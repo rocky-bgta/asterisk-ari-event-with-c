@@ -4,6 +4,10 @@
 #include <functional>
 #include <json/value.h>
 #include <json/reader.h>
+#include <pcap.h>
+
+// Function prototype
+void startRtpCapture(const std::string& iface, const std::string& filter_exp);
 
 typedef websocketpp::client<websocketpp::config::asio_client> client;
 
@@ -31,7 +35,17 @@ void on_message(client* c, websocketpp::connection_hdl hdl, websocketpp::config:
         // Example: Extracting target extension
         std::string target_extension = jsonData["args"][0].asString();
         std::cout << "Target extension: " << target_extension << std::endl;
-    }else if (event_type == "StasisEnd") {
+
+        // Assuming we get IP and port details from another part of the message
+        std::string src_ip = jsonData["channel"]["connected"]["address"].asString();
+        int src_port = jsonData["channel"]["connected"]["port"].asInt();
+
+        std::string filter_exp = "udp and src host " + src_ip + " and src port " + std::to_string(src_port);
+
+        // Start capturing RTP packets
+        startRtpCapture("eth0", filter_exp); // Replace "eth0" with your network interface
+    }
+    else if (event_type == "StasisEnd") {
         std::string channel_id = jsonData["channel"]["id"].asString();
         std::cout << "Channel ID: " << channel_id << " has left the Stasis application" << std::endl;
     }

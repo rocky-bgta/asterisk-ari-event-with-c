@@ -31,10 +31,22 @@ else()
     message(FATAL_ERROR "Could not find jsoncpp libraries.")
 endif()
 
+# Find and link PcapPlusPlus
+find_package(PcapPlusPlus CONFIG REQUIRED)
+if (PcapPlusPlus_FOUND)
+    include_directories(${PcapPlusPlus_INCLUDE_DIRS})
+else()
+    message(FATAL_ERROR "Could not find PcapPlusPlus libraries.")
+endif()
+
+# Include directory for header files
+include_directories(include)
+
 # List of source files
 set(SOURCES
         ${PROJECT_SOURCE_DIR}/src/ari_event_listener.cpp
         ${PROJECT_SOURCE_DIR}/src/main.cpp
+        ${PROJECT_SOURCE_DIR}/src/rtp_capture.cpp
 )
 
 # Define the executable
@@ -46,9 +58,14 @@ target_link_libraries(ARIListener
     Boost::random
     websocketpp::websocketpp
     jsoncpp_lib
+    PCAP::PCAP
+        Packet::Packet
+        PcapPlusPlus::Pcap++
+        PcapPlusPlus::Common++
 )
 
 # Ensure the linker finds the libraries
 link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${websocketpp_LIBRARY_DIRS})
 link_directories(${jsoncpp_LIBRARY_DIRS})
+link_directories(${PcapPlusPlus_LIBRARY_DIRS})
