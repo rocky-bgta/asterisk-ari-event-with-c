@@ -34,7 +34,7 @@ void on_message(client* c, websocketpp::connection_hdl hdl, websocketpp::config:
         std::cout << "Incoming call from: " << caller_number << " on channel ID: " << channel_id << std::endl;
 
         // Example: Extracting target extension
-        std::string target_extension = jsonData["args"][0].asString();
+        std::string target_extension = jsonData["channel"]["dialplan"]["exten"].asString();
         std::cout << "Target extension: " << target_extension << std::endl;
 
         // Assuming we get IP and port details from another part of the message
@@ -42,6 +42,7 @@ void on_message(client* c, websocketpp::connection_hdl hdl, websocketpp::config:
         int src_port = jsonData["channel"]["connected"]["port"].asInt();
 
         std::string filter_exp = "udp and src host " + src_ip + " and src port " + std::to_string(src_port);
+        std::cout << "Filter Expression: " << filter_exp << std::endl;
 
         // Determine the default network interface
         std::string iface = getDefaultInterface();
