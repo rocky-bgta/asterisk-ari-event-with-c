@@ -47,6 +47,7 @@ set(SOURCES
         ${PROJECT_SOURCE_DIR}/src/ari_event_listener.cpp
         ${PROJECT_SOURCE_DIR}/src/main.cpp
         ${PROJECT_SOURCE_DIR}/src/rtp_capture.cpp
+        ${PROJECT_SOURCE_DIR}/src/utility.cpp
 )
 
 # Define the executable

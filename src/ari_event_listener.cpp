@@ -8,6 +8,7 @@
 
 // Function prototype
 void startRtpCapture(const std::string& iface, const std::string& filter_exp);
+std::string getDefaultInterface();
 
 typedef websocketpp::client<websocketpp::config::asio_client> client;
 
@@ -42,8 +43,15 @@ void on_message(client* c, websocketpp::connection_hdl hdl, websocketpp::config:
 
         std::string filter_exp = "udp and src host " + src_ip + " and src port " + std::to_string(src_port);
 
+        // Determine the default network interface
+        std::string iface = getDefaultInterface();
+        if (iface.empty()) {
+            std::cerr << "Could not determine default network interface" << std::endl;
+            return;
+        }
+
         // Start capturing RTP packets
-        startRtpCapture("eth0", filter_exp); // Replace "eth0" with your network interface
+        startRtpCapture(iface, filter_exp);
     }
     else if (event_type == "StasisEnd") {
         std::string channel_id = jsonData["channel"]["id"].asString();
