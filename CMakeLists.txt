@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Set the path to the vcpkg toolchain file (adjust if necessary)
 set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 
+
 # Find and link Boost libraries
 find_package(Boost REQUIRED COMPONENTS system random)
 if (Boost_FOUND)
@@ -39,6 +40,9 @@ else()
     message(FATAL_ERROR "Could not find PcapPlusPlus libraries.")
 endif()
 
+# Find and link libtins
+find_package(libtins CONFIG REQUIRED)
+
 # Include directory for header files
 include_directories(include)
 
@@ -63,6 +67,7 @@ target_link_libraries(ARIListener
         Packet::Packet
         PcapPlusPlus::Pcap++
         PcapPlusPlus::Common++
+    tins
 )
 
 # Ensure the linker finds the libraries
