@@ -4,11 +4,103 @@
 #include <functional>
 #include <json/value.h>
 #include <json/reader.h>
+#include <tins/tins.h>
+#include <thread>
+#include <chrono>
 
 #include "constants.hpp"
 #include "ari_curl_utils.hpp"
+#include "utility.hpp"
+
+using namespace Tins;
 
 typedef websocketpp::client<websocketpp::config::asio_client> client;
+
+
+// Callback function to handle captured packets
+//bool capture_rtp_packets(const PDU& pdu) {
+bool capture_rtp_packets(const std::string& iface) {
+
+    try {
+
+        SnifferConfiguration config;
+        config.set_filter("udp"); // Filter for UDP packets
+        config.set_promisc_mode(true);
+
+        // Create the sniffer
+        Sniffer sniffer(iface, config);
+
+        // Lambda function to handle each captured packet
+        auto packetHandler = [](const PDU& pdu) {
+            try {
+                const IP& ip = pdu.rfind_pdu<IP>();
+                const UDP& udp = pdu.rfind_pdu<UDP>();
+                const RawPDU& raw = pdu.rfind_pdu<RawPDU>();
+
+                // Print packet details
+                std::cout << "Packet captured:" << std::endl;
+                std::cout << "Source IP: " << ip.src_addr() << std::endl;
+                std::cout << "Destination IP: " << ip.dst_addr() << std::endl;
+                std::cout << "Source port: " << udp.sport() << std::endl;
+                std::cout << "Destination port: " << udp.dport() << std::endl;
+
+                // Print the raw payload data (RTP payload)
+                const std::vector<uint8_t>& payload = raw.payload();
+                std::cout << "Payload: ";
+                for (size_t i = 0; i < payload.size(); ++i) {
+                    std::cout << std::hex << static_cast<int>(payload[i]) << " ";
+                }
+                std::cout << std::dec << std::endl; // Switch back to decimal
+            }
+            catch (const std::exception& e) {
+                std::cerr << "Error processing packet: " << e.what() << std::endl;
+            }
+            return true;
+        };
+
+        // Start sniffing
+        sniffer.sniff_loop(packetHandler);
+
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error processing packet: " << e.what() << std::endl;
+    }
+    return true;
+}
+
+
+/*void capture_rtp_packetsOld(const std::string& iface) {
+    // Create a sniffer configuration
+    SnifferConfiguration config;
+    config.set_filter("udp"); // Filter for UDP packets
+    config.set_promisc_mode(true);
+
+    // Create the sniffer
+    Sniffer sniffer(iface, config);
+
+    // Lambda function to process each packet
+    auto handler = [](PDU& pdu) {
+        // Parse the packet
+        const UDP* udp = pdu.find_pdu<UDP>();
+        if (udp) {
+            // Get the payload data (RTP packet)
+            const RawPDU* raw = udp->find_pdu<RawPDU>();
+            if (raw) {
+                const RawPDU::payload_type& payload = raw->payload();
+
+                // Assuming RTP packets are within the UDP payload
+                // Check for RTP packet based on known properties (e.g., port range, payload size)
+                if (payload.size() > 12) { // Simple check for RTP header size
+                    std::cout << "Captured RTP packet, size: " << payload.size() << " bytes" << std::endl;
+                    // Further processing can be done here (e.g., decoding RTP)
+                }
+            }
+        }
+    };
+
+    // Start sniffing
+    sniffer.sniff_loop(handler);
+}*/
 
 void on_message(client* c, websocketpp::connection_hdl hdl, websocketpp::config::asio_client::message_type::ptr msg) {
     std::cout << "Received message: " << msg->get_payload() << std::endl;
@@ -109,7 +201,17 @@ void run_ari_listener(const std::string& uri) {
 }
 
 int main() {
-    std::string uri = "ws://192.168.0.132:8088/ari/events?api_key=asterisk:secret&app=my-stasis-app";
+
+    std::string networkInterFaceName = getDefaultInterface();
+    if (networkInterFaceName.empty()) {
+        std::cerr << "No default interface found, exiting." << std::endl;
+        return 1;
+    }
+
+    // Start RTP packet capture in a separate thread
+    std::thread rtp_thread(capture_rtp_packets, networkInterFaceName);
+    std::string ipAddress = Constants::HOST+":" + Constants::PORT;
+    std::string uri = "ws://"+ipAddress+"/ari/events?api_key=asterisk:secret&app=my-stasis-app";
     run_ari_listener(uri);
     return 0;
 }
