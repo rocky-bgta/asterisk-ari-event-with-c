@@ -35,8 +35,6 @@ void on_message(client* c, websocketpp::connection_hdl hdl, websocketpp::config:
         std::string target_extension = jsonData["channel"]["dialplan"]["exten"].asString();
         std::cout << "Target extension: " << target_extension << std::endl;
 
-
-
         // Create a bridge
         std::string bridge_id = create_bridge(Constants::SERVER_URL, Constants::ARI_USERNAME, Constants::ARI_PASSWORD);
         std::cout << "Bridge created with ID: " << bridge_id << std::endl;
@@ -67,13 +65,6 @@ void on_message(client* c, websocketpp::connection_hdl hdl, websocketpp::config:
         dial_channel(Constants::SERVER_URL, new_channel_id, Constants::ARI_USERNAME, Constants::ARI_PASSWORD);
         std::cout << "Dialing new channel " << new_channel_id << std::endl;
 
-
-        // Assuming we get IP and port details from another part of the message
-//        std::string src_ip = jsonData["channel"]["connected"]["address"].asString();
-//        int src_port = jsonData["channel"]["connected"]["port"].asInt();
-
-//        std::string filter_exp = "udp and src host " + src_ip + " and src port " + std::to_string(src_port);
-//        std::cout << "Filter Expression: " << filter_exp << std::endl;
     }
     else if (event_type == "StasisEnd") {
         std::string channel_id = jsonData["channel"]["id"].asString();
@@ -122,10 +113,3 @@ int main() {
     run_ari_listener(uri);
     return 0;
 }
-
-//int main() {
-//    std::cout << "Server URL: " << Constants::SERVER_URL << std::endl;
-//    std::cout << "User: " << Constants::USER << std::endl;
-//    std::cout << "Password: " << Constants::PASSWORD << std::endl;
-//    return 0;
-//}
