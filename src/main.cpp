@@ -35,15 +35,15 @@ void on_message(client* c, websocketpp::connection_hdl hdl, websocketpp::config:
         std::string target_extension = jsonData["channel"]["dialplan"]["exten"].asString();
         std::cout << "Target extension: " << target_extension << std::endl;
 
-
+        // Start recording the call
+        std::string recording_response = start_recording(Constants::SERVER_URL, channel_id, "call_recording", Constants::ARI_USERNAME, Constants::ARI_PASSWORD);
+        std::cout << recording_response << std::endl;
 
         // Create a bridge
         std::string bridge_id = create_bridge(Constants::SERVER_URL, Constants::ARI_USERNAME, Constants::ARI_PASSWORD);
         std::cout << "Bridge created with ID: " << bridge_id << std::endl;
 
         std::string SIPInfo = "SIP/"+target_extension;
-
-
 
         // Create a new channel to the target extension (inactive)
         std::string new_channel_id = create_channel(Constants::SERVER_URL, SIPInfo, target_extension,
@@ -55,25 +55,16 @@ void on_message(client* c, websocketpp::connection_hdl hdl, websocketpp::config:
         std::string active_channel_id = channel_id;
 
         // Add the active channel to the bridge
-        add_channel_to_bridge(Constants::SERVER_URL, bridge_id, active_channel_id,Constants::ARI_USERNAME, Constants::ARI_PASSWORD);
+        add_channel_to_bridge(Constants::SERVER_URL, bridge_id, active_channel_id, Constants::ARI_USERNAME, Constants::ARI_PASSWORD);
         std::cout << "Active channel " << active_channel_id << " added to bridge " << bridge_id << std::endl;
 
         // Add the new channel to the bridge
         add_channel_to_bridge(Constants::SERVER_URL, bridge_id, new_channel_id, Constants::ARI_USERNAME, Constants::ARI_PASSWORD);
         std::cout << "New channel " << new_channel_id << " added to bridge " << bridge_id << std::endl;
 
-
         // Start dialing the new channel
         dial_channel(Constants::SERVER_URL, new_channel_id, Constants::ARI_USERNAME, Constants::ARI_PASSWORD);
         std::cout << "Dialing new channel " << new_channel_id << std::endl;
-
-
-        // Assuming we get IP and port details from another part of the message
-//        std::string src_ip = jsonData["channel"]["connected"]["address"].asString();
-//        int src_port = jsonData["channel"]["connected"]["port"].asInt();
-
-//        std::string filter_exp = "udp and src host " + src_ip + " and src port " + std::to_string(src_port);
-//        std::cout << "Filter Expression: " << filter_exp << std::endl;
     }
     else if (event_type == "StasisEnd") {
         std::string channel_id = jsonData["channel"]["id"].asString();
@@ -122,10 +113,3 @@ int main() {
     run_ari_listener(uri);
     return 0;
 }
-
-//int main() {
-//    std::cout << "Server URL: " << Constants::SERVER_URL << std::endl;
-//    std::cout << "User: " << Constants::USER << std::endl;
-//    std::cout << "Password: " << Constants::PASSWORD << std::endl;
-//    return 0;
-//}

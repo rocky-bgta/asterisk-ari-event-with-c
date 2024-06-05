@@ -88,3 +88,34 @@ void dial_channel(const std::string& server_url, const std::string& channel_id, 
     std::string url = server_url + "/ari/channels/" + channel_id + "/dial";
     http_post(url, "", user, password);
 }
+
+std::string start_recording(const std::string& server_url, const std::string& channel_id, const std::string& filename, const std::string& username, const std::string& password) {
+    CURL* curl;
+    CURLcode res;
+    std::string url = server_url + "/recordings/live/" + channel_id + "/start?api_key=" + username + ":" + password;
+
+    std::string postFields = "name=" + filename + "&format=wav&maxDurationSeconds=3600&ifExists=overwrite";
+
+    curl_global_init(CURL_GLOBAL_ALL);
+    curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postFields.c_str());
+
+        struct curl_slist* headers = NULL;
+        headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+        res = curl_easy_perform(curl);
+
+        if(res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
+    }
+    curl_global_cleanup();
+
+    return res == CURLE_OK ? "Recording started successfully" : "Failed to start recording";
+}
