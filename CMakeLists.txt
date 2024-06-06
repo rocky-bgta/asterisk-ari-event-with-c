@@ -11,6 +11,7 @@ set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/utility)
 
+
 # List of source files
 file(GLOB SOURCES
     ${PROJECT_SOURCE_DIR}/src/*.cpp
