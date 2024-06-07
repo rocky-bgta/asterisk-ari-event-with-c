@@ -117,15 +117,29 @@ void run_ari_listener(const std::string& uri) {
     c.run();
 }
 
-int main() {
-    std::string uri = "ws://192.168.0.132:8088/ari/events?api_key=asterisk:secret&app=my-stasis-app";
-    run_ari_listener(uri);
-    return 0;
-}
-
 //int main() {
-//    std::cout << "Server URL: " << Constants::SERVER_URL << std::endl;
-//    std::cout << "User: " << Constants::USER << std::endl;
-//    std::cout << "Password: " << Constants::PASSWORD << std::endl;
+//    std::string uri = "ws://192.168.0.132:8088/ari/events?api_key=asterisk:secret&app=my-stasis-app";
+//    run_ari_listener(uri);
 //    return 0;
 //}
+
+int main() {
+    try {
+        //std::string iface = getDefaultInterface();
+
+        // Start RTP packet capture in a separate thread
+        //std::thread rtp_thread(capture_rtp_packets, iface);
+
+        // Existing WebSocket setup and ARI listener code
+        std::string uri = "ws://192.168.0.132:8088/ari/events?api_key=asterisk:secret&app=my-stasis-app";
+        run_ari_listener(uri);
+
+        // Wait for RTP capture thread to finish (in practice, this would run indefinitely)
+        //rtp_thread.join();
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
+    }
+
+    return 0;
+}

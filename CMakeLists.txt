@@ -63,13 +63,13 @@ else()
 endif()
 
 # Find and link libtins
-find_package(libtins CONFIG REQUIRED)
-if (libtins_FOUND)
-    include_directories(${libtins_INCLUDE_DIRS})
-    target_link_libraries(ARIListener tins)
-else()
-    message(FATAL_ERROR "Could not find libtins libraries.")
-endif()
+#find_package(libtins CONFIG REQUIRED)
+#if (libtins_FOUND)
+#    include_directories(${libtins_INCLUDE_DIRS})
+#    target_link_libraries(ARIListener tins)
+#else()
+#    message(FATAL_ERROR "Could not find libtins libraries.")
+#endif()
 
 # Find and link libcurl
 find_package(CURL REQUIRED)
