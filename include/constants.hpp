@@ -6,6 +6,8 @@
 class Constants {
 public:
     static const std::string SERVER_URL;
+    static const std::string HOST;
+    static const std::string PORT;
     static const std::string ARI_USERNAME;
     static const std::string ARI_PASSWORD;
     static const std::string STASIS_APP;
