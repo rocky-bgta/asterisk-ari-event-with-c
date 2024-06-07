@@ -7,10 +7,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Set the path to the vcpkg toolchain file (adjust if necessary)
 set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 
+# Set the path to the WpdPack
+set(WPD_PACK_DIR "C:/C-Plus-Plus-Lib/WpdPack")
+
 # Include directories for header files
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/utility)
-
+include_directories(${WPD_PACK_DIR}/Include)
 
 # List of source files
 file(GLOB SOURCES
@@ -62,14 +65,15 @@ else()
     message(FATAL_ERROR "Could not find PcapPlusPlus libraries.")
 endif()
 
+# Uncomment if libtins is needed
 # Find and link libtins
-#find_package(libtins CONFIG REQUIRED)
-#if (libtins_FOUND)
-#    include_directories(${libtins_INCLUDE_DIRS})
-#    target_link_libraries(ARIListener tins)
-#else()
-#    message(FATAL_ERROR "Could not find libtins libraries.")
-#endif()
+# find_package(libtins CONFIG REQUIRED)
+# if (libtins_FOUND)
+#     include_directories(${libtins_INCLUDE_DIRS})
+#     target_link_libraries(ARIListener tins)
+# else()
+#     message(FATAL_ERROR "Could not find libtins libraries.")
+# endif()
 
 # Find and link libcurl
 find_package(CURL REQUIRED)
@@ -80,10 +84,21 @@ else()
     message(FATAL_ERROR "Could not find libcurl libraries.")
 endif()
 
+# Link the necessary libraries from WpdPack
+if (MSVC)
+    target_link_libraries(ARIListener
+        ${WPD_PACK_DIR}/Lib/wpcap.lib
+        ${WPD_PACK_DIR}/Lib/Packet.lib
+        ws2_32
+        mswsock
+    )
+endif()
+
 # Ensure the linker finds the libraries
 link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${websocketpp_LIBRARY_DIRS})
 link_directories(${jsoncpp_LIBRARY_DIRS})
 link_directories(${PcapPlusPlus_LIBRARY_DIRS})
-link_directories(${libtins_LIBRARY_DIRS})
+# link_directories(${libtins_LIBRARY_DIRS})
 link_directories(${CURL_LIBRARY_DIRS})
+link_directories(${WPD_PACK_DIR}/Lib)

@@ -2,6 +2,7 @@
 #include "rtp_capture.hpp"
 #include <iostream>
 #include <pcap.h>
+#include <stdexcept>
 
 #ifdef __linux__
 #include <arpa/inet.h>
